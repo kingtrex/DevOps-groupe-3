@@ -1,7 +1,10 @@
 exports.handler = async (event) => {
-    const parisTime = new Date().toLocaleString("fr-FR", { timeZone: "Europe/Paris" });
+    const name = event.queryStringParameters.name;
+    const today = new Date();
+    const time = today.getHours()+1 + ":" + today.getMinutes();
+    
     return {
         statusCode: 200,
-        body: JSON.stringify({ event }),
+        body: "Hello World ! Ici " + name + ", à " + time,
     };
 };
