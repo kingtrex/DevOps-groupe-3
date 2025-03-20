@@ -42,7 +42,7 @@ jobs:
           cd ..
 
       - name: Terraform Init
-        run: terraform init -input=false
+        run: terraform init
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
