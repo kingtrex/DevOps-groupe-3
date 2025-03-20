@@ -47,10 +47,8 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
 
-      - name: Configure Git
-        run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
+      - name: Set up Git authentication
+        run: git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}
 
       - name: Save Terraform state
         run: |
