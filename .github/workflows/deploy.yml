@@ -25,10 +25,11 @@ jobs:
           git reset --hard
           git checkout main
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Configurer AWS credentials avec clés d'accès
+        uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: arn:aws:iam::AKIA5ZDRXEUJX4XJID6N:role/g3-role
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Utilisation du secret
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # Utilisation du secret
           aws-region: eu-west-3
 
       - name: Install Terraform
