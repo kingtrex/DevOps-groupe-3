@@ -1,0 +1,58 @@
+name: Deploy Lambda & API Gateway
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Checkout Terraform state branch
+        run: |
+          git fetch origin state || git checkout --orphan state
+          git checkout state
+          mkdir -p tfstate
+          git reset --hard
+          git checkout main
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::AKIA5ZDRXEUJX4XJID6N:role/g3-role
+          aws-region: eu-west-3
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Generate Lambda ZIP
+        run: |
+          cd lambda
+          zip -r ../lambda.zip .
+          cd ..
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+      - name: Save Terraform state
+        run: |
+          git checkout state
+          mv tfstate/terraform.tfstate .
+          git add terraform.tfstate
+          git commit -m "Update Terraform state"
+          git push origin state
+
+      - name: Get API URL
+        run: echo "API URL > $(terraform output -raw api_url)" >> $GITHUB_STEP_SUMMARY
